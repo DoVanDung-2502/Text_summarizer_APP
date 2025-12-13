@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# os.environ["GOOGLE_API_KEY"] = "AIzaSyB7a-_FFGyg6W-CrpprtoQB-o1ZjQLZ1w8"
 def summarize_pdf(pdf_file_path):
     print("Loading PDF ....")
     
