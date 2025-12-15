@@ -3,23 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Text Summarizer - Day 24</title>
+    <title>AI Document Summarizer</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-
     <div class="container mt-5">
-        <h1 class="text-center text-primary mb-4">🤖 Ứng dụng Tóm tắt Văn bản AI</h1>
+        <h1 class="text-center text-primary mb-4">🤖 Tóm tắt Văn bản & PDF</h1>
         
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card shadow">
                     <div class="card-body">
-                        <form method="POST">
-                            <div class="mb-3">
-                                <label for="input_text" class="form-label fw-bold">Nhập văn bản cần tóm tắt:</label>
-                                <textarea class="form-control" id="input_text" name="input_text" rows="8" placeholder="Dán nội dung bài báo, email hoặc tài liệu vào đây...">{{ original_text }}</textarea>
+                        <form method="POST" enctype="multipart/form-data">
+                            
+                            <div class="mb-4 border-bottom pb-3">
+                                <label for="input_file" class="form-label fw-bold">📁 Tải lên file PDF:</label>
+                                <input class="form-control" type="file" id="input_file" name="input_file" accept=".pdf">
+                                <div class="form-text">Ưu tiên xử lý file PDF nếu bạn tải lên.</div>
                             </div>
+
+                            <div class="mb-3">
+                                <label for="input_text" class="form-label fw-bold">✍️ Hoặc dán văn bản vào đây:</label>
+                                <textarea class="form-control" id="input_text" name="input_text" rows="5" placeholder="Nếu không có file PDF, hãy dán nội dung vào đây...">{{ original_text }}</textarea>
+                            </div>
+
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary btn-lg">✨ Tóm tắt ngay</button>
                             </div>
@@ -27,20 +34,20 @@
                     </div>
                 </div>
 
+                {% if error %}
+                <div class="alert alert-danger mt-3">{{ error }}</div>
+                {% endif %}
+
                 {% if summary %}
                 <div class="card mt-4 border-success shadow">
-                    <div class="card-header bg-success text-white fw-bold">
-                        Kết quả tóm tắt:
-                    </div>
+                    <div class="card-header bg-success text-white fw-bold">Kết quả tóm tắt:</div>
                     <div class="card-body bg-white">
                         <div class="card-text" style="white-space: pre-wrap;">{{ summary }}</div>
                     </div>
                 </div>
                 {% endif %}
-
             </div>
         </div>
     </div>
-
 </body>
 </html>
