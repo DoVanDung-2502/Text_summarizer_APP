@@ -1,8 +1,10 @@
 flask
 flask-caching
+langchain
+langchain-classic
+langchain-community
 langchain-google-genai
 python-dotenv
-google-generativeai
 werkzeug
 gunicorn
 pypdf
