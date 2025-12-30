@@ -1,6 +1,7 @@
 import os
+import langchain
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_classic.chains  import load_summarize_chain
+from langchain_classic.chains.summarize import load_summarize_chain
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_core.prompts import PromptTemplate
 from dotenv import load_dotenv
