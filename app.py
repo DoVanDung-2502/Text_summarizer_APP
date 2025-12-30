@@ -1,5 +1,3 @@
-
-import google.generativeai as genai
 import os
 import logging
 import hashlib
