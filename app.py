@@ -8,6 +8,7 @@ from flask_caching import Cache
 from flask import Flask,render_template,request
 from pdf_process import summarize_pdf
 from dotenv import load_dotenv
+from langchain_google_genai import ChatGoogleGenerativeAI
 app = Flask(__name__)
 
 # ---------------------------------------
@@ -29,19 +30,10 @@ cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache', 'CaCHE_DEFAULT_TIMEOUT':
 # ---------------------------------------
 
 load_dotenv()
-GEMINI_API_KEY = "AIzaSyB7a-_FFGyg6W-CrpprtoQB-o1ZjQLZ1w8"
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-2.5-flash")
-
-# def get_summary(text):
-#     prompt = f"""Hãy tóm tắt văn bản sau một cách ngắn gọn và súc tích bằng tiếng việt. Đưa ra ý chính dưới dạng gạch đầu dòng
-#     Văn bản: {text}"""
-    
-#     try:
-#         respone = model.generate_content(prompt)
-#         return respone.text
-#     except Exception as e:
-#         return f"Lỗi khi tạo tóm tắt: {str(e)}"
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash", # Dùng model chuẩn 1.5-flash
+    temperature=0.5
+)
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -73,9 +65,8 @@ def home():
                 summary_result = summarize_pdf(file_path)
                 os.remove(file_path)  # Xoá file sau khi tóm tắt
                 logging.info(f"File {filename} summarized successfully.")
-            elif 'input_text' in request:
+            elif 'input_text' in request.form and request.form['input_text'].strip() != '':
                 original_text = request.form['input_text']
-                
                 cache_key = generate_cache_key(original_text)
                 cached_data = cache.get(cache_key)
                 
@@ -84,9 +75,9 @@ def home():
                     summary_result = cached_data + " (Lấy từ bộ nhớ đệm)"
                 else:
                     logging.info("MISS CACHE! Gọi AI để tạo tóm tắt.")
-                    model = genai.GenerativeModel("gemini-2.5-flash")
-                    resopnse = model.generate_content(f"Tóm tắt văn bản sau một cách ngắn gọn và súc tích bằng tiếng việt: {original_text}")
-                    summary_result = resopnse.text
+                    prompt = f"Hãy tóm tắt văn bản sau một cách ngắn gọn và súc tích bằng tiếng việt. {original_text}"
+                    response = llm.invoke(prompt)
+                    summary_result = response.text
                     
                     cache.set(cache_key, summary_result) # Lưu kêt quả vào bộ nhớ đệm dùng cho lần sau
             else:
@@ -103,7 +94,7 @@ def home():
     )
 
     
-
+    
 if __name__ == "__main__":
     app.run(debug=True)
     
